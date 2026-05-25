@@ -1,7 +1,6 @@
 name: Daily Script Pipeline
 on:
   workflow_dispatch:
-
 jobs:
   execute:
     runs-on: ubuntu-latest
@@ -20,8 +19,12 @@ jobs:
       run: |
         git config user.name "github-actions[bot]"
         git config user.email "github-actions[bot]@users.noreply.github.com"
-        git add daily_output.txt
-        git commit -m "Add new script" || echo "No changes"
-        git push
+        if [ -f "index.html" ]; then
+          git add index.html
+          git commit -m "Update affiliate site" || echo "No changes to commit"
+          git push
+        else
+          echo "index.html was not created."
+        fi
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
