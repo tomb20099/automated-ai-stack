@@ -10,7 +10,8 @@ if not api_key:
 genai.configure(api_key=api_key)
 
 # Use the established model
-model = genai.GenerativeModel("gemini-1.5-flash")
+model = genai.GenerativeModel("gemini-1.5-flash-001")
+
 
 marketing_prompt = (
     "You are an expert SaaS affiliate marketer. Generate a unique, highly engaging 60-second "
