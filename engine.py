@@ -38,7 +38,14 @@ if model:
     
     response = model.generate_content(prompt)
     
+    # Create the clickable link HTML
+    clickable_link = f'<a href="{MY_AFFILIATE_LINK}" target="_blank" style="font-weight: bold; color: #007bff;">Click here to launch your business for free</a>'
+    
     # HTML template with SEO tags and affiliate disclosure
+    # We replace the text version of the link with the clickable HTML version
+    content_body = response.text.replace('**', '<b>').replace('>', '<br>')
+    content_body = content_body.replace(f'Click here to launch your business for free: {MY_AFFILIATE_LINK}', f'Click here to launch your business for free: {clickable_link}')
+
     html_content = f"""
     <!DOCTYPE html>
     <html lang="en">
@@ -55,7 +62,9 @@ if model:
         <p style='font-size: 12px; color: #555; border: 1px solid #ddd; padding: 10px;'>
             <strong>Disclosure:</strong> This post contains affiliate links. If you click and purchase, I may earn a commission at no extra cost to you.
         </p>
-        {response.text.replace('**', '<b>').replace('>', '<br>')}
+        <div>
+            {content_body}
+        </div>
     </body>
     </html>
     """
