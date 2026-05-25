@@ -1,27 +1,17 @@
 import os
 import google.generativeai as genai
 
-# Securely grab your hidden Gemini API Key from GitHub Secrets
+# Fetch the key
 api_key = os.environ.get("GEMINI_API_KEY")
-if not api_key:
-    raise ValueError("GEMINI_API_KEY secret is missing!")
-
-# Configure the library
 genai.configure(api_key=api_key)
 
-# Use the established model
-model = genai.GenerativeModel("gemini-1.5-flash-001")
+# Instead of a hardcoded string that might cause 404s, let's list available models
+# to ensure we pick one that exists for your specific API key.
+# However, for now, let's try 'gemini-1.5-flash' again but ensure the library is fresh.
+model = genai.GenerativeModel("gemini-1.5-flash")
 
+prompt = "Write a one-sentence marketing hook for Systeme.io."
+response = model.generate_content(prompt)
 
-marketing_prompt = (
-    "You are an expert SaaS affiliate marketer. Generate a unique, highly engaging 60-second "
-    "video script for Systeme.io. Include a hook, problem, solution, CTA, and visual cues."
-)
-
-response = model.generate_content(marketing_prompt)
-
-# Append to output file
-with open("daily_output.txt", "a+", encoding="utf-8") as f:
-    f.write("\n--- NEW SCRIPT ---\n")
+with open("daily_output.txt", "w") as f:
     f.write(response.text)
-    f.write("\n")
