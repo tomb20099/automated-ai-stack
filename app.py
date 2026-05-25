@@ -6,7 +6,7 @@ api_key = os.environ.get("GEMINI_API_KEY")
 if not api_key:
     raise ValueError("GEMINI_API_KEY secret is missing!")
 
-# Configure the AI brain
+# Configure the AI brain using the updated flash model
 genai.configure(api_key=api_key)
 model = genai.GenerativeModel("gemini-1.5-flash")
 
@@ -29,10 +29,10 @@ marketing_prompt = (
 print("Contacting Gemini for today's high-intent affiliate script...")
 response = model.generate_content(marketing_prompt)
 
-# Use 'a+' mode to append the new scripts to a running backlog instead of overwriting it
+# Append the new scripts to a running backlog file
 with open("daily_output.txt", "a+", encoding="utf-8") as f:
     f.write("\n" + "="*50 + "\n")
-    f.write(f"AUTOMATED SAAS SCRIPT GENERATION\n")
+    f.write("AUTOMATED SAAS SCRIPT GENERATION\n")
     f.write("="*50 + "\n\n")
     f.write(response.text)
     f.write("\n\n")
