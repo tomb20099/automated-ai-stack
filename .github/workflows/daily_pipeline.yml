@@ -12,7 +12,7 @@ jobs:
         python-version: '3.10'
     - name: Run script
       run: |
-        pip install google-generativeai
+        pip install -U google-generativeai
         python engine.py
       env:
         GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
