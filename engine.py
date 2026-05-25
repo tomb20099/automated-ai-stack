@@ -18,8 +18,8 @@ def get_working_model():
 model = get_working_model()
 
 if model:
-    # Improved prompt to ensure the link is used naturally
-        prompt = f"""
+    # The prompt is now correctly indented with 4 spaces
+    prompt = f"""
     Write a high-converting, 300-word promotional article for Systeme.io.
     
     Structure the article using these four steps:
@@ -31,8 +31,6 @@ if model:
     Tone: Energetic, professional, and empathetic. 
     Constraint: Do not provide multiple options. Provide only one final, polished article.
     """
-
-
     
     response = model.generate_content(prompt)
     
@@ -53,4 +51,3 @@ if model:
 else:
     print("No usable models found.")
     exit(1)
-
