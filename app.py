@@ -1,34 +1,40 @@
 import os
 import google.generativeai as genai
 
-# 1. Pull your secret key from GitHub's vault securely
+# Securely grab your hidden Gemini API Key from GitHub Secrets
 api_key = os.environ.get("GEMINI_API_KEY")
-
 if not api_key:
-    print("Error: GEMINI_API_KEY is missing. Check your repository secrets!")
-    exit(1)
+    raise ValueError("GEMINI_API_KEY secret is missing!")
 
-# 2. Wake up the Gemini Engine
+# Configure the AI brain
 genai.configure(api_key=api_key)
-model = genai.GenerativeModel('gemini-1.5-flash')
+model = genai.GenerativeModel("gemini-pro")
 
-# 3. Ask it a question (We can change this prompt to whatever you want automated later!)
-prompt = "Give me one interesting, highly creative daily tip for digital automation or building autonomous projects."
+# The ultimate SaaS marketing prompt engineered for high conversion
+marketing_prompt = (
+    "You are an expert SaaS affiliate marketer creating high-converting short-form video scripts "
+    "(YouTube Shorts/TikTok) to promote the free all-in-one business builder, Systeme.io.\n\n"
+    "Generate a unique, highly engaging 60-second video script. Vary the topic today—choose either "
+    "a comparison (e.g., Systeme vs ClickFunnels), a specific tutorial step (e.g., how to build a free landing page "
+    "in 5 minutes), or a passive income strategy (e.g., how to sell digital products with $0 startup cost).\n\n"
+    "Include the following structural sections:\n"
+    "1. HOOK: A jarring or deeply relatable statement in the first 3 seconds to stop the scroll.\n"
+    "2. THE PROBLEM: Why traditional software setups are too expensive or complicated for beginners.\n"
+    "3. THE SOLUTION: Introduce how Systeme.io solves this perfectly for $0/month.\n"
+    "4. CALL TO ACTION (CTA): Explicitly direct viewers to click the link in the comments/description to grab their free account.\n"
+    "5. ON-SCREEN VISUAL CUES: Add bracketed notes [like this] explaining what visual or text overlay should be shown on screen during each line.\n\n"
+    "Keep the tone sharp, punchy, confident, and highly persuasive. Do not use generic introductions."
+)
 
-print(f"Sending request to Gemini... Prompt: '{prompt}'")
+print("Contacting Gemini for today's high-intent affiliate script...")
+response = model.generate_content(marketing_prompt)
 
-try:
-    response = model.generate_content(prompt)
-    output_text = response.text
-    
-    print("\n--- Success! Gemini Response ---")
-    print(output_text)
-    print("--------------------------------")
-    
-    # 4. Save the response into a local text file inside your repository
-    with open("daily_output.txt", "w", encoding="utf-8") as file:
-        file.write(output_text)
-    print("Saved response to daily_output.txt successfully!")
+# Use 'a+' mode to append the new scripts to a running backlog instead of overwriting it
+with open("daily_output.txt", "a+", encoding="utf-8") as f:
+    f.write("\n" + "="*50 + "\n")
+    f.write(f"AUTOMATED SAAS SCRIPT GENERATION\n")
+    f.write("="*50 + "\n\n")
+    f.write(response.text)
+    f.write("\n\n")
 
-except Exception as e:
-    print(f"An error occurred while connecting to the AI: {e}")
+print("Success! Your daily affiliate script has been safely added to your digital asset vault.")
