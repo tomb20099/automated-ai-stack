@@ -1,4 +1,7 @@
 name: Run Daily AI Engine
+permissions:
+  contents: write
+
 
 on:
   # This tells GitHub to run your code automatically every day at 9:00 AM UTC
