@@ -45,6 +45,7 @@ if model:
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta name="google-site-verification" content="Pzv9wBaAEqV0IEWDI9ew55F4wgm_p1Cmo2BI-M66peQ" />
         <title>Systeme.io Review & All-in-One Marketing Platform</title>
         <meta name="description" content="Discover how to simplify your online business with Systeme.io. An all-in-one platform for sales funnels, email marketing, and course hosting.">
         <meta name="keywords" content="Systeme.io, online business, sales funnels, email marketing, passive income, digital marketing">
