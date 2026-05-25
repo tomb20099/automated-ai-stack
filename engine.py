@@ -1,17 +1,12 @@
 import os
 import google.generativeai as genai
 
-# Fetch the key from environment
+# Configure the library
 api_key = os.environ.get("GEMINI_API_KEY")
 genai.configure(api_key=api_key)
 
-# Use the stable pro model
-model = genai.GenerativeModel("gemini-1.5-pro")
-
-# Generate content
-prompt = "Write a one-sentence marketing hook for Systeme.io."
-response = model.generate_content(prompt)
-
-# Save to file
-with open("daily_output.txt", "w") as f:
-    f.write(response.text)
+# List all models you have permission to access
+print("Checking available models...")
+for m in genai.list_models():
+    if 'generateContent' in m.supported_generation_methods:
+        print(f"Available Model ID: {m.name}")
