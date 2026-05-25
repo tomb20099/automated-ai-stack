@@ -1,17 +1,17 @@
 import os
 import google.generativeai as genai
 
-# Fetch the key
+# Fetch the key from environment
 api_key = os.environ.get("GEMINI_API_KEY")
 genai.configure(api_key=api_key)
 
-# Instead of a hardcoded string that might cause 404s, let's list available models
-# to ensure we pick one that exists for your specific API key.
-# However, for now, let's try 'gemini-1.5-flash' again but ensure the library is fresh.
-model = genai.GenerativeModel("gemini-1.5-flash")
+# Use the stable pro model
+model = genai.GenerativeModel("gemini-1.5-pro")
 
+# Generate content
 prompt = "Write a one-sentence marketing hook for Systeme.io."
 response = model.generate_content(prompt)
 
+# Save to file
 with open("daily_output.txt", "w") as f:
     f.write(response.text)
