@@ -3,11 +3,8 @@ permissions:
   contents: write
 
 on:
-  # This tells GitHub to run your code automatically every day at 9:00 AM UTC
   schedule:
     - cron: '0 9 * * *'
-  
-  # This adds a manual button so you can test run it whenever you want!
   workflow_dispatch:
 
 jobs:
