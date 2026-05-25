@@ -19,12 +19,20 @@ model = get_working_model()
 
 if model:
     # Improved prompt to ensure the link is used naturally
-    prompt = f"""
-    Write a persuasive and helpful promotional article about Systeme.io.
-    Explain how it helps entrepreneurs automate their business.
-    Naturally include this call to action with the link: 
-    'Click here to start your all-in-one business for free: {MY_AFFILIATE_LINK}'
+        prompt = f"""
+    Write a high-converting, 300-word promotional article for Systeme.io.
+    
+    Structure the article using these four steps:
+    1. THE PAIN: Start by highlighting the frustration of managing multiple expensive marketing tools.
+    2. THE SOLUTION: Introduce Systeme.io as the 'all-in-one' secret weapon that solves this instantly. 
+    3. THE PROOF: Mention that it is designed to save money and consolidate their entire tech stack.
+    4. THE CALL TO ACTION: End with this exact CTA sentence: 'Stop struggling with your workflow. Click here to launch your business for free: {MY_AFFILIATE_LINK}'
+
+    Tone: Energetic, professional, and empathetic. 
+    Constraint: Do not provide multiple options. Provide only one final, polished article.
     """
+
+
     
     response = model.generate_content(prompt)
     
