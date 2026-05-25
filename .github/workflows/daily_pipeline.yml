@@ -8,6 +8,10 @@ on:
 jobs:
   execute:
     runs-on: ubuntu-latest
+    # THIS SECTION IS CRITICAL:
+    permissions:
+      contents: write
+      
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
@@ -24,7 +28,9 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git add index.html
-          git commit -m "Update site" || echo "No changes"
+          # Use '|| exit 0' to prevent the action from failing if there are no changes
+          git commit -m "Update site with AI content" || exit 0
+          git pull --rebase
           git push
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
