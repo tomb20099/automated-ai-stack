@@ -1,15 +1,17 @@
 import os
-from google import genai
+import google.generativeai as genai
 
 # Securely grab your hidden Gemini API Key from GitHub Secrets
 api_key = os.environ.get("GEMINI_API_KEY")
 if not api_key:
     raise ValueError("GEMINI_API_KEY secret is missing!")
 
-# Initialize the modern, ultra-fast client
-client = genai.Client(api_key=api_key)
+# Configure the legacy library with the explicit API key
+genai.configure(api_key=api_key)
 
-# The ultimate SaaS marketing prompt engineered for high conversion
+# Using the standard modern string version compatible with 0.8.0+
+model = genai.GenerativeModel("gemini-1.5-flash")
+
 marketing_prompt = (
     "You are an expert SaaS affiliate marketer creating high-converting short-form video scripts "
     "(YouTube Shorts/TikTok) to promote the free all-in-one business builder, Systeme.io.\n\n"
@@ -26,10 +28,7 @@ marketing_prompt = (
 )
 
 print("Contacting Gemini for today's high-intent affiliate script...")
-response = client.models.generate_content(
-    model='gemini-1.5-flash',
-    contents=marketing_prompt,
-)
+response = model.generate_content(marketing_prompt)
 
 # Append the new scripts to a running backlog file
 with open("daily_output.txt", "a+", encoding="utf-8") as f:
