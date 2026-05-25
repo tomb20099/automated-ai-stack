@@ -8,7 +8,7 @@ if not api_key:
 
 # Configure the AI brain
 genai.configure(api_key=api_key)
-model = genai.GenerativeModel("gemini-pro")
+model = genai.GenerativeModel("gemini-1.5-flash")
 
 # The ultimate SaaS marketing prompt engineered for high conversion
 marketing_prompt = (
