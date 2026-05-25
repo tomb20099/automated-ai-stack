@@ -6,7 +6,6 @@ api_key = os.environ.get("GEMINI_API_KEY")
 genai.configure(api_key=api_key)
 
 # Configuration
-# This is your unique affiliate link
 MY_AFFILIATE_LINK = "https://systeme.io/?sa=sa0272561737740b78da5351c120a4a094cf24ecb8"
 
 def get_working_model():
@@ -19,17 +18,16 @@ def get_working_model():
 model = get_working_model()
 
 if model:
-    # This prompt is structured to force a single, persuasive article
-    # and includes your affiliate link as requested.
+    # Stricter prompt to ensure a single, persuasive article
     prompt = f"""
-    Write a high-converting, 300-word promotional article for Systeme.io.
+    Write one single, high-converting promotional article for Systeme.io.
     
     CRITICAL INSTRUCTIONS:
     - Do NOT provide "options". 
     - Do NOT use headers like "Option 1" or "Option 2".
     - Write exactly one polished, cohesive article.
     
-    Structure the article using these four steps:
+    Structure:
     1. THE PAIN: Start by highlighting the frustration of managing multiple expensive marketing tools.
     2. THE SOLUTION: Introduce Systeme.io as the 'all-in-one' secret weapon that solves this instantly. 
     3. THE PROOF: Mention that it is designed to save money and consolidate their entire tech stack.
