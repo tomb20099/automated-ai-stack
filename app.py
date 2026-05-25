@@ -6,9 +6,9 @@ api_key = os.environ.get("GEMINI_API_KEY")
 if not api_key:
     raise ValueError("GEMINI_API_KEY secret is missing!")
 
-# Configure the AI brain using the updated flash model
+# Configure the AI brain using the updated flash model prefix
 genai.configure(api_key=api_key)
-model = genai.GenerativeModel("gemini-1.5-flash")
+model = genai.GenerativeModel("models/gemini-1.5-flash")
 
 # The ultimate SaaS marketing prompt engineered for high conversion
 marketing_prompt = (
