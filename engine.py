@@ -1,26 +1,28 @@
 import os
 import google.generativeai as genai
 
-# Configure
+# Setup
 api_key = os.environ.get("GEMINI_API_KEY")
 genai.configure(api_key=api_key)
+model = genai.GenerativeModel("gemini-1.5-flash")
 
-# Dynamically find a valid model
-def get_model():
-    for m in genai.list_models():
-        if 'generateContent' in m.supported_generation_methods and 'flash' in m.name:
-            print(f"Using model: {m.name}")
-            return genai.GenerativeModel(m.name)
-    # Fallback to a standard name if no flash model is dynamically found
-    return genai.GenerativeModel("gemini-1.5-flash")
-
-model = get_model()
-
-# Generate
-prompt = "Write a one-sentence marketing hook for Systeme.io."
+# Generate Content
+prompt = "Write a catchy headline and a 3-sentence promotional blurb for Systeme.io with a placeholder link."
 response = model.generate_content(prompt)
 
-# Save
-with open("daily_output.txt", "w") as f:
-    f.write(response.text)
+# Save as HTML (The 'Platform')
+html_content = f"""
+<html>
+<body>
+    <h1>My SaaS Affiliate Hub</h1>
+    <div style="font-family: sans-serif;">
+        {response.text.replace('$', '<br>')}
+    </div>
+</body>
+</html>
+"""
+
+with open("index.html", "w") as f:
+    f.write(html_content)
+
 
