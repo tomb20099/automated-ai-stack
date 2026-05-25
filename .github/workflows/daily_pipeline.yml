@@ -1,28 +1,34 @@
 name: Daily Script Pipeline
+
 on:
   workflow_dispatch:
+  schedule:
+    - cron: '0 9 * * *'
+
 jobs:
   execute:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v4
-    - uses: actions/setup-python@v5
-      with:
-        python-version: '3.10'
-    - name: Run script
-      run: |
-        pip install -U google-generativeai
-        python engine.py
-      env:
-        GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
-    - name: Push results
-      run: |
-        git config user.name "github-actions[bot]"
-        git config user.email "github-actions[bot]@users.noreply.github.com"
-        if [ -f "index.html" ]; then
-          git add index.html
-          git commit -m "Update site" || echo "No changes"
-          git push
-        fi
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
+      - name: Run script
+        run: |
+          pip install -U google-generativeai
+          python engine.py
+        env:
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+      - name: Push results
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          if [ -f "index.html" ]; then
+            git add index.html
+            git commit -m "Update affiliate site" || echo "No changes to commit"
+            git push
+          else
+            echo "index.html not found, skipping push."
+          fi
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
