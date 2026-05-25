@@ -1,18 +1,27 @@
 import os
 import google.generativeai as genai
 
-# Setup API
+# Setup
 api_key = os.environ.get("GEMINI_API_KEY")
 genai.configure(api_key=api_key)
-model = genai.GenerativeModel("gemini-1.5-flash")
 
-# Generate Content
-try:
+# Instead of naming a specific model, we list available ones
+# and pick the first one that supports text generation.
+def get_working_model():
+    models = genai.list_models()
+    for m in models:
+        if 'generateContent' in m.supported_generation_methods:
+            return genai.GenerativeModel(m.name)
+    return None
+
+model = get_working_model()
+
+if model:
     response = model.generate_content("Write a promotional blurb for Systeme.io.")
-    # Ensure content is simple text to avoid file encoding issues
     with open("index.html", "w") as f:
         f.write(f"<html><body>{response.text}</body></html>")
-except Exception as e:
-    print(f"Error: {e}")
+else:
+    print("No usable models found.")
     exit(1)
+
 
