@@ -34,11 +34,16 @@ if __name__ == "__main__":
     with open("template.html", "r") as f:
         template = f.read()
 
+    # Track if it's the first run to decide if we need to sleep
+    first_run = True
+
     for filename, topic_prompt in PAGES.items():
-        print(f"Generating {filename}...")
+        if not first_run:
+            print(f"Waiting to avoid quota limits for {filename}...")
+            time.sleep(65)
         
-        # SLOW DOWN to avoid Free Tier Rate Limits (Quota)
-        time.sleep(65)
+        print(f"Generating {filename}...")
+        first_run = False
         
         prompt = f"Write a 500-word article about: {topic_prompt}. Use HTML tags (<h2>, <p>). Include this image: <img src='{IMAGE_URL}'>"
         
