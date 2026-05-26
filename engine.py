@@ -17,9 +17,12 @@ def get_working_model():
             return genai.GenerativeModel(m.name)
     return None
 
-model = get_working_model()
+# Use the dynamic model selector
+model_instance = get_working_model()
 
-if model:
+if model_instance:
+    print(f"Successfully connected to model: {model_instance.model_name}")
+    
     prompt = f"""
     Write one single, high-converting promotional article for Systeme.io.
     
@@ -34,7 +37,7 @@ if model:
     4. THE CALL TO ACTION: End with: 'Stop struggling with your workflow. Click here to launch your business for free: {MY_AFFILIATE_LINK}'
     """
     
-    response = model.generate_content(prompt)
+    response = model_instance.generate_content(prompt)
     
     # Process content
     content_body = response.text
@@ -64,5 +67,5 @@ if model:
     with open("index.html", "w") as f:
         f.write(html_content)
 else:
-    print("No usable models found.")
+    print("Error: No usable models found. Check your API key or permissions.")
     exit(1)
