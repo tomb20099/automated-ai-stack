@@ -10,6 +10,13 @@ MY_AFFILIATE_LINK = "https://systeme.io/?sa=sa0272561737740b78da5351c120a4a094cf
 NEWSLETTER_LINK = "https://tombeattie09.systeme.io/7a3a6748"
 IMAGE_URL = "https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&q=80&w=800"
 
+# Define the pages to build
+PAGES = {
+    "index.html": "Write a high-converting promotional article about Systeme.io all-in-one features.",
+    "automation.html": "Write a comprehensive guide on how to automate your sales funnel.",
+    "marketing.html": "Write professional tips on effective email marketing for beginners."
+}
+
 def get_working_model():
     models = genai.list_models()
     for m in models:
@@ -23,49 +30,42 @@ model_instance = get_working_model()
 if model_instance:
     print(f"Successfully connected to model: {model_instance.model_name}")
     
-    prompt = f"""
-    Write one single, high-converting promotional article for Systeme.io.
-    
-    CRITICAL INSTRUCTIONS:
-    - Include an HTML image tag <img src='{IMAGE_URL}' alt='Systeme.io dashboard' style='max-width: 100%; height: auto; border-radius: 8px;'> right after the first paragraph.
-    - Write exactly one polished, cohesive article.
-    
-    Structure:
-    1. THE PAIN: Start by highlighting the frustration of managing multiple tools.
-    2. THE SOLUTION: Introduce Systeme.io as the 'all-in-one' secret weapon.
-    3. THE PROOF: Mention it consolidates the tech stack.
-    4. THE CALL TO ACTION: End with: 'Stop struggling with your workflow. Click here to launch your business for free: {MY_AFFILIATE_LINK}'
-    """
-    
-    response = model_instance.generate_content(prompt)
-    
-    # Process content
-    content_body = response.text
-    clickable_link = f'<a href="{MY_AFFILIATE_LINK}" target="_blank" style="font-weight: bold; color: #007bff;">Click here to launch your business for free</a>'
-    content_body = content_body.replace(f'Click here to launch your business for free: {MY_AFFILIATE_LINK}', f'Stop struggling with your workflow. {clickable_link}')
+    # Read the template
+    with open("template.html", "r") as f:
+        template = f.read()
 
-    html_content = f"""
-    <!DOCTYPE html>
-    <html lang="en">
-    <head>
-        <meta charset="UTF-8">
-        <meta name='impact-site-verification' value='b52fd6d4-08b7-4aee-b6c1-d9c5a5f65793'>
-        <title>Systeme.io Business Tools</title>
-    </head>
-    <body style='font-family: sans-serif; line-height: 1.6; padding: 20px; max-width: 800px; margin: auto;'>
-        {content_body}
+    for filename, topic_prompt in PAGES.items():
+        print(f"Generating content for {filename}...")
         
-        <div style='background-color: #f0f8ff; padding: 25px; border-radius: 10px; margin-top: 40px; border: 1px solid #d1e7dd; text-align: center;'>
-            <h3 style='margin-top: 0;'>Want to Scale Faster?</h3>
-            <p>Get my free <strong>Business Automation Blueprint</strong>. Join the community building smarter, not harder.</p>
-            <a href="{NEWSLETTER_LINK}" target="_blank" style="padding: 12px 25px; background-color: #007bff; color: white; text-decoration: none; border-radius: 5px; font-weight: bold; display: inline-block;">Get My Free Blueprint</a>
-        </div>
-    </body>
-    </html>
-    """
-    
-    with open("index.html", "w") as f:
-        f.write(html_content)
+        prompt = f"""
+        Write a high-converting article about: {topic_prompt}
+        
+        CRITICAL INSTRUCTIONS:
+        - Include this exact HTML image tag right after the first paragraph: 
+          <img src='{IMAGE_URL}' alt='Systeme.io dashboard' class='article-image'>
+        - Write approximately 300 words.
+        - Ensure the tone is polished and cohesive.
+        - Start with the pain, present the solution, and end with a call to action.
+        """
+        
+        response = model_instance.generate_content(prompt)
+        content_body = response.text
+        
+        # Process the affiliate link replacement
+        clickable_link = f'<a href="{MY_AFFILIATE_LINK}" target="_blank" style="font-weight: bold; color: #007bff;">Click here to launch your business for free</a>'
+        content_body = content_body.replace(f'Click here to launch your business for free: {MY_AFFILIATE_LINK}', f'Stop struggling with your workflow. {clickable_link}')
+
+        # Fill the template mold
+        final_html = template.replace("{CONTENT}", content_body)\
+                             .replace("{NEWSLETTER_LINK}", NEWSLETTER_LINK)\
+                             .replace("{TITLE}", filename.replace(".html", "").title() + " | Systeme.io Business Tools")
+        
+        # Write the file
+        with open(filename, "w") as f:
+            f.write(final_html)
+            
+    print("All pages generated successfully.")
+
 else:
     print("Error: No usable models found. Check your API key or permissions.")
     exit(1)
