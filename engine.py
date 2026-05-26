@@ -17,22 +17,29 @@ PAGES = {
     "courses.html": "Write a guide on how to host and sell online courses using Systeme.io."
 }
 
-def generate_with_retry(prompt, retries=2):
-    # Updated to gemini-2.0-flash, which is the current stable model
+def generate_with_retry(prompt):
+    # Using gemini-2.0-flash, the most stable model for your setup
     model = GenerativeModel('gemini-2.0-flash')
     try:
         return model.generate_content(prompt)
     except Exception as e:
-        # If this fails, this line will print the exact reason in the GitHub Logs
         print(f"!!! CRASH REPORT: {e} !!!")
         return None
 
 if __name__ == "__main__":
+    # Ensure template exists
+    if not os.path.exists("template.html"):
+        raise FileNotFoundError("template.html is missing from your repository!")
+
     with open("template.html", "r") as f:
         template = f.read()
 
     for filename, topic_prompt in PAGES.items():
         print(f"Generating {filename}...")
+        
+        # SLOW DOWN to avoid Free Tier Rate Limits (Quota)
+        time.sleep(65)
+        
         prompt = f"Write a 500-word article about: {topic_prompt}. Use HTML tags (<h2>, <p>). Include this image: <img src='{IMAGE_URL}'>"
         
         response = generate_with_retry(prompt)
@@ -48,5 +55,5 @@ if __name__ == "__main__":
                 f.write(final_html)
             print(f"Successfully saved {filename}.")
         else:
-            # Force the pipeline to fail so you see the error immediately
+            # This triggers the pipeline to stop and show you the error in the logs
             raise Exception(f"Failed to generate {filename}. See CRASH REPORT above.")
