@@ -1,35 +1,31 @@
 name: Daily Script Pipeline
-
 on:
   workflow_dispatch:
   schedule:
     - cron: '0 9 * * *'
 
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
 jobs:
-  execute:
+  build:
     runs-on: ubuntu-latest
-    permissions:
-      contents: write
-      
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
         with:
           python-version: '3.10'
-      - name: Run script
+      - name: Install dependencies
+        run: pip install -U google-generativeai
+      - name: Run generation script
         env:
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
-        run: |
-          pip install -U google-generativeai
-          # We add 'set -e' to ensure the pipeline fails if the python script crashes
-          set -e
-          python engine.py
-      - name: Push results
-        run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
-          # Adding all .html files instead of just index.html
-          git add *.html
-          git commit -m "Update site with AI content" || exit 0
-          git pull --rebase
-          git push
+        run: python engine.py
+      - name: Upload Pages Artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: '.' # This uploads everything (template, images, generated html)
+      - name: Deploy to GitHub Pages
+        uses: actions/deploy-pages@v4
