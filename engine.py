@@ -1,5 +1,5 @@
 import os
-import time  # <--- Added to prevent rate limits
+import time
 import google.generativeai as genai
 
 # Setup
@@ -38,8 +38,8 @@ if model_instance:
     for filename, topic_prompt in PAGES.items():
         print(f"Generating content for {filename}...")
         
-        # Pause to avoid API rate limits
-        time.sleep(10) 
+        # Pause to avoid API rate limits (25 seconds buffer)
+        time.sleep(25) 
         
         # Enhanced prompt for structure and professional HTML quality
         prompt = f"""
