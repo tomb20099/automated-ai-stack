@@ -18,8 +18,8 @@ PAGES = {
 }
 
 def generate_with_retry(prompt, retries=2):
-    # Using the latest stable model
-    model = GenerativeModel('gemini-2.5-flash')
+    # Updated to gemini-2.0-flash, which is the current stable model
+    model = GenerativeModel('gemini-2.0-flash')
     try:
         return model.generate_content(prompt)
     except Exception as e:
@@ -38,9 +38,12 @@ if __name__ == "__main__":
         response = generate_with_retry(prompt)
         
         if response and response.text:
+            # Filling the template
             final_html = template.replace("{CONTENT}", response.text)\
                                  .replace("{NEWSLETTER_LINK}", NEWSLETTER_LINK)\
                                  .replace("{TITLE}", filename.replace(".html", "").title())
+            
+            # Writing the file
             with open(filename, "w") as f:
                 f.write(final_html)
             print(f"Successfully saved {filename}.")
