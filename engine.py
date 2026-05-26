@@ -20,7 +20,8 @@ PAGES = {
 
 def generate_with_retry(prompt, retries=3):
     """Generates content with a built-in retry mechanism for API stability."""
-    model = genai.GenerativeModel('gemini-1.5-flash')
+    # Using gemini-1.5-pro for better model availability
+    model = genai.GenerativeModel('gemini-1.5-pro')
     for i in range(retries):
         try:
             return model.generate_content(prompt)
