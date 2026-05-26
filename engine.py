@@ -37,15 +37,15 @@ if model_instance:
     for filename, topic_prompt in PAGES.items():
         print(f"Generating content for {filename}...")
         
-        # Enhanced prompt for structure and professional quality
+        # Enhanced prompt for structure and professional HTML quality
         prompt = f"""
         Write a detailed, 500-word professional article about: {topic_prompt}.
         
         CRITICAL INSTRUCTIONS:
+        - Output the content using pure HTML tags only (use <h2> for subheadings, <p> for paragraphs, and <ul><li> for bullet points). 
+        - DO NOT use Markdown symbols like ##, **, or -.
         - Include this exact HTML image tag right after the first paragraph: 
           <img src='{IMAGE_URL}' alt='Systeme.io dashboard' class='article-image'>
-        - Structure the article with clear H2 subheadings to break up sections.
-        - Use bullet points to list benefits or features.
         - Tone: Expert, engaging, and authoritative.
         - Start with the pain, present the solution, and end with a call to action.
         """
