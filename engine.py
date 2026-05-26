@@ -37,14 +37,16 @@ if model_instance:
     for filename, topic_prompt in PAGES.items():
         print(f"Generating content for {filename}...")
         
+        # Enhanced prompt for structure and professional quality
         prompt = f"""
-        Write a high-converting article about: {topic_prompt}
+        Write a detailed, 500-word professional article about: {topic_prompt}.
         
         CRITICAL INSTRUCTIONS:
         - Include this exact HTML image tag right after the first paragraph: 
           <img src='{IMAGE_URL}' alt='Systeme.io dashboard' class='article-image'>
-        - Write approximately 300 words.
-        - Ensure the tone is polished and cohesive.
+        - Structure the article with clear H2 subheadings to break up sections.
+        - Use bullet points to list benefits or features.
+        - Tone: Expert, engaging, and authoritative.
         - Start with the pain, present the solution, and end with a call to action.
         """
         
