@@ -1,11 +1,10 @@
 import os
 import time
-from google import genai
-from google.genai import types
+import google.generativeai as genai
 
 # Setup
 api_key = os.environ.get("GEMINI_API_KEY")
-client = genai.Client(api_key=api_key)
+genai.configure(api_key=api_key)
 
 # Configuration
 MY_AFFILIATE_LINK = "https://systeme.io/?sa=sa0272561737740b78da5351c120a4a094cf24ecb8"
@@ -19,17 +18,14 @@ PAGES = {
 }
 
 def generate_with_retry(prompt, retries=3):
-    """Generates content using the modern Gemini SDK."""
+    """Generates content with error reporting."""
+    model = genai.GenerativeModel('gemini-1.5-flash')
     for i in range(retries):
         try:
-            # Using the latest stable model
-            response = client.models.generate_content(
-                model='gemini-3.5-flash',
-                contents=prompt,
-            )
-            return response
+            return model.generate_content(prompt)
         except Exception as e:
-            print(f"DEBUG ERROR: {e}")
+            print(f"DEBUG ERROR: {e}") # This will show the real reason for failure
+            print(f"Attempt {i+1} failed. Retrying...")
             time.sleep(45) 
     return None
 
@@ -42,20 +38,19 @@ if __name__ == "__main__":
         time.sleep(40) 
         
         prompt = f"""
-        Write a detailed, 500-word professional article about: {topic_prompt}.
-        
-        CRITICAL INSTRUCTIONS:
-        - Output pure HTML tags only (<h2>, <p>, <ul><li>). 
-        - DO NOT use Markdown symbols.
-        - Include this image tag after the first paragraph: 
-          <img src='{IMAGE_URL}' alt='Systeme.io dashboard' class='article-image'>
-        - Tone: Expert and authoritative.
+        Write a 500-word professional article about: {topic_prompt}.
+        - Use HTML tags only (<h2>, <p>, <ul><li>).
+        - No Markdown.
+        - Add this image after the first paragraph: <img src='{IMAGE_URL}' alt='Systeme.io dashboard' class='article-image'>
         """
         
         response = generate_with_retry(prompt)
         
         if response and response.text:
             content_body = response.text
+            clickable_link = f'<a href="{MY_AFFILIATE_LINK}" target="_blank">Click here to launch your business for free</a>'
+            content_body = content_body.replace(f'Click here to launch your business for free: {MY_AFFILIATE_LINK}', f'Stop struggling. {clickable_link}')
+
             final_html = template.replace("{CONTENT}", content_body)\
                                  .replace("{NEWSLETTER_LINK}", NEWSLETTER_LINK)\
                                  .replace("{TITLE}", filename.replace(".html", "").title() + " | Systeme.io Business Tools")
