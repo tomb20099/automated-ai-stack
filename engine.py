@@ -11,10 +11,11 @@ MY_AFFILIATE_LINK = "https://systeme.io/?sa=sa0272561737740b78da5351c120a4a094cf
 NEWSLETTER_LINK = "https://tombeattie09.systeme.io/7a3a6748"
 IMAGE_URL = "https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&q=80&w=800"
 
+# Targetting 3 core pages for stability and quality
 PAGES = {
     "index.html": "Write a high-converting promotional article about Systeme.io all-in-one features.",
     "automation.html": "Write a comprehensive guide on how to automate your sales funnel.",
-    "marketing.html": "Write professional tips on effective email marketing for beginners."
+    "courses.html": "Write a guide on how to host and sell online courses using Systeme.io."
 }
 
 def generate_with_retry(prompt, retries=3):
@@ -35,6 +36,9 @@ if __name__ == "__main__":
 
     for filename, topic_prompt in PAGES.items():
         print(f"Generating content for {filename}...")
+        
+        # Safe buffer for 3 pages to respect API rate limits
+        time.sleep(40) 
         
         # Enhanced prompt for structure and professional HTML quality
         prompt = f"""
