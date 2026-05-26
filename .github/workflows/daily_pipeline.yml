@@ -10,6 +10,7 @@ permissions:
   id-token: write
 
 jobs:
+  # This job builds your site
   build:
     runs-on: ubuntu-latest
     steps:
@@ -26,6 +27,16 @@ jobs:
       - name: Upload Pages Artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: '.' # This uploads everything (template, images, generated html)
+          path: '.' 
+
+  # This job deploys your site
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages # This is the missing piece
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
       - name: Deploy to GitHub Pages
+        id: deployment
         uses: actions/deploy-pages@v4
