@@ -1,11 +1,9 @@
 import os
 import time
-import google.generativeai as genai
-from google.generativeai import configure, GenerativeModel
+from google import genai
 
-# Setup
-api_key = os.environ.get("GEMINI_API_KEY")
-configure(api_key=api_key)
+# Setup: The SDK automatically uses the GEMINI_API_KEY environment variable
+client = genai.Client()
 
 NEWSLETTER_LINK = "https://tombeattie09.systeme.io/7a3a6748"
 IMAGE_URL = "https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&q=80&w=800"
@@ -29,9 +27,11 @@ def get_authoritative_prompt(topic):
     """
 
 def generate_content(prompt):
-    # Hardcoded to a universally supported stable model to avoid 404/list_models errors
-    model = GenerativeModel('gemini-1.5-flash')
-    response = model.generate_content(prompt)
+    # Modern SDK call
+    response = client.models.generate_content(
+        model="gemini-2.0-flash",
+        contents=prompt
+    )
     return response.text
 
 if __name__ == "__main__":
@@ -42,14 +42,13 @@ if __name__ == "__main__":
         template = f.read()
 
     for filename, topic in PAGES.items():
-        # INITIALIZE: If file doesn't exist, create it so the link works immediately
+        # Ensure file exists so GitHub Pages doesn't 404
         if not os.path.exists(filename):
             with open(filename, "w") as f:
-                f.write(template.replace("{CONTENT}", "<h1>Loading...</h1><p>Content is being generated. Please check back shortly.</p>"))
-            print(f"Created placeholder for {filename}")
+                f.write(template.replace("{CONTENT}", "<h1>Loading...</h1>"))
 
         try:
-            print(f"Attempting to generate content for {filename}...")
+            print(f"Generating content for {filename}...")
             time.sleep(70) 
             
             content = generate_content(get_authoritative_prompt(topic))
@@ -63,7 +62,5 @@ if __name__ == "__main__":
             print(f"Successfully updated {filename}.")
             
         except Exception as e:
-            print(f"FAILED to generate {filename}: {e}. Keeping existing content.")
+            print(f"FAILED to update {filename}: {e}")
             continue 
-
-    print("Process finished.")
