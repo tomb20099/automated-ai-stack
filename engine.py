@@ -17,7 +17,8 @@ PAGES = {
 }
 
 def generate_content(prompt):
-    model = GenerativeModel('gemini-1.5-flash') # 1.5-flash is currently more stable for Free Tier
+    # UPDATED: Switched from 1.5-flash to 2.0-flash
+    model = GenerativeModel('gemini-2.0-flash') 
     response = model.generate_content(prompt)
     return response.text
 
@@ -31,8 +32,7 @@ if __name__ == "__main__":
     for filename, topic in PAGES.items():
         try:
             print(f"Generating {filename}...")
-            # Increased sleep to 90 seconds to avoid the 'RequestsPerMinute' limit
-            time.sleep(90) 
+            time.sleep(70) # Keeping sleep to manage quota
             
             prompt = f"Write a 500-word article about: {topic}. Use HTML tags (<h2>, <p>). Include this image: <img src='{IMAGE_URL}'>"
             
@@ -48,7 +48,9 @@ if __name__ == "__main__":
             
         except Exception as e:
             print(f"FAILED to generate {filename}: {e}")
-            # Continue to the next page instead of stopping everything
+            # ADDED: Fallback to prevent 404s
+            with open(filename, "w") as f:
+                f.write(f"<h1>Coming Soon</h1><p>We are updating this content. Please check back later.</p>")
             continue 
 
     print("Process finished.")
