@@ -34,13 +34,9 @@ def get_authoritative_prompt(topic):
     """
 
 def generate_content(prompt):
-    # Dynamically find a valid model supported by your key
     models = [m.name for m in genai.list_models() if "generateContent" in m.supported_generation_methods]
-    
-    # Prioritize 2.0, fall back to 1.5, or take the first available flash model
-    model_name = next((m for m in models if "gemini-2.0-flash" in m), None)
-    if not model_name:
-        model_name = next((m for m in models if "gemini-1.5-flash" in m), "gemini-1.5-flash")
+    model_name = next((m for m in models if "gemini-2.0-flash" in m), None) or \
+                 next((m for m in models if "gemini-1.5-flash" in m), "gemini-1.5-flash")
     
     model = GenerativeModel(model_name)
     response = model.generate_content(prompt)
@@ -55,24 +51,24 @@ if __name__ == "__main__":
 
     for filename, topic in PAGES.items():
         try:
-            print(f"Generating {filename}...")
+            print(f"Attempting to generate {filename}...")
             time.sleep(70) 
             
-            prompt = get_authoritative_prompt(topic)
-            content = generate_content(prompt)
+            # 1. Generate content FIRST
+            content = generate_content(get_authoritative_prompt(topic))
             
+            # 2. Only if the above succeeds, prepare and save the file
             final_html = template.replace("{CONTENT}", content)\
                                  .replace("{NEWSLETTER_LINK}", NEWSLETTER_LINK)\
                                  .replace("{TITLE}", filename.replace(".html", "").title())
             
             with open(filename, "w") as f:
                 f.write(final_html)
-            print(f"Successfully saved {filename}.")
+            print(f"Successfully updated {filename}.")
             
         except Exception as e:
-            print(f"FAILED to generate {filename}: {e}")
-            with open(filename, "w") as f:
-                f.write(f"<h1>Coming Soon</h1><p>We are updating this content. Please check back later.</p>")
+            # 3. If it fails, print the error but DO NOT write "Coming Soon"
+            print(f"FAILED to generate {filename}: {e}. Keeping existing version.")
             continue 
 
     print("Process finished.")
