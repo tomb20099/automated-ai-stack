@@ -29,10 +29,8 @@ def get_authoritative_prompt(topic):
     """
 
 def generate_content(prompt):
-    models = [m.name for m in genai.list_models() if "generateContent" in m.supported_generation_methods]
-    model_name = next((m for m in models if "gemini-2.0-flash" in m), None) or \
-                 next((m for m in models if "gemini-1.5-flash" in m), "gemini-1.5-flash")
-    model = GenerativeModel(model_name)
+    # Hardcoded to a universally supported stable model to avoid 404/list_models errors
+    model = GenerativeModel('gemini-1.5-flash')
     response = model.generate_content(prompt)
     return response.text
 
@@ -44,10 +42,9 @@ if __name__ == "__main__":
         template = f.read()
 
     for filename, topic in PAGES.items():
-        # INITIALIZE: If file doesn't exist, create it so the link works immediately
         if not os.path.exists(filename):
             with open(filename, "w") as f:
-                f.write(template.replace("{CONTENT}", "<h1>Loading...</h1><p>Content is being generated.</p>"))
+                f.write(template.replace("{CONTENT}", "<h1>Loading...</h1><p>Content is being generated. Please check back shortly.</p>"))
             print(f"Created placeholder for {filename}")
 
         try:
@@ -65,7 +62,7 @@ if __name__ == "__main__":
             print(f"Successfully updated {filename}.")
             
         except Exception as e:
-            print(f"FAILED to generate {filename}: {e}. Keeping current version.")
+            print(f"FAILED to generate {filename}: {e}. Keeping existing content.")
             continue 
 
     print("Process finished.")
