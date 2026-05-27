@@ -2,7 +2,7 @@ import os
 import time
 from google import genai
 
-# Setup: The SDK automatically uses the GEMINI_API_KEY environment variable
+# Setup
 client = genai.Client()
 
 NEWSLETTER_LINK = "https://tombeattie09.systeme.io/7a3a6748"
@@ -26,12 +26,9 @@ def get_authoritative_prompt(topic):
     Include this image at the top: <img src='{IMAGE_URL}' style='width:100%; height:auto;'>
     """
 
-def generate_content(prompt):
-    # Modern SDK call
-    response = client.models.generate_content(
-        model="gemini-2.0-flash",
-        contents=prompt
-    )
+def generate_content(topic):
+    prompt = get_authoritative_prompt(topic)
+    response = client.models.generate_content(model="gemini-2.0-flash", contents=prompt)
     return response.text
 
 if __name__ == "__main__":
@@ -42,12 +39,16 @@ if __name__ == "__main__":
         template = f.read()
 
     for filename, topic in PAGES.items():
-        try:
-            print(f"Generating content for {filename}...")
-            # We add a sleep to stay within API rate limits
-            time.sleep(70) 
+        # SKIP if file exists and has content to protect your quota
+        if os.path.exists(filename) and os.path.getsize(filename) > 1000:
+            print(f"Skipping {filename}, already exists.")
+            continue
             
-            content = generate_content(get_authoritative_prompt(topic))
+        try:
+            print(f"Generating {filename}...")
+            time.sleep(75) # Conservative delay to stay under quota
+            
+            content = generate_content(topic)
             
             final_html = template.replace("{CONTENT}", content)\
                                  .replace("{NEWSLETTER_LINK}", NEWSLETTER_LINK)\
@@ -58,9 +59,5 @@ if __name__ == "__main__":
             print(f"Successfully updated {filename}.")
             
         except Exception as e:
-            # AMENDMENT: If it fails, write the error to the file so we can debug it
-            error_msg = f"<h1>Generation Error</h1><p>Check logs: {str(e)}</p>"
-            with open(filename, "w") as f:
-                f.write(template.replace("{CONTENT}", error_msg))
-            print(f"FAILED to update {filename}: {e}")
-            continue 
+            print(f"FAILED {filename}: {e}")
+            continue
