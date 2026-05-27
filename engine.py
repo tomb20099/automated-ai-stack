@@ -42,13 +42,9 @@ if __name__ == "__main__":
         template = f.read()
 
     for filename, topic in PAGES.items():
-        # Ensure file exists so GitHub Pages doesn't 404
-        if not os.path.exists(filename):
-            with open(filename, "w") as f:
-                f.write(template.replace("{CONTENT}", "<h1>Loading...</h1>"))
-
         try:
             print(f"Generating content for {filename}...")
+            # We add a sleep to stay within API rate limits
             time.sleep(70) 
             
             content = generate_content(get_authoritative_prompt(topic))
@@ -62,5 +58,9 @@ if __name__ == "__main__":
             print(f"Successfully updated {filename}.")
             
         except Exception as e:
+            # AMENDMENT: If it fails, write the error to the file so we can debug it
+            error_msg = f"<h1>Generation Error</h1><p>Check logs: {str(e)}</p>"
+            with open(filename, "w") as f:
+                f.write(template.replace("{CONTENT}", error_msg))
             print(f"FAILED to update {filename}: {e}")
             continue 
