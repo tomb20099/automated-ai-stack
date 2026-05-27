@@ -24,11 +24,9 @@ jobs:
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
         run: python engine.py
         
-      # --- THIS IS THE ADDITION ---
+      # This step will print exactly what files were created
       - name: Verify files exist
-        run: |
-          echo "Listing all files in the build directory:"
-          ls -la
+        run: ls -1
           
       - name: Upload Pages Artifact
         uses: actions/upload-pages-artifact@v3
