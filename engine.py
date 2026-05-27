@@ -42,6 +42,7 @@ if __name__ == "__main__":
         template = f.read()
 
     for filename, topic in PAGES.items():
+        # INITIALIZE: If file doesn't exist, create it so the link works immediately
         if not os.path.exists(filename):
             with open(filename, "w") as f:
                 f.write(template.replace("{CONTENT}", "<h1>Loading...</h1><p>Content is being generated. Please check back shortly.</p>"))
