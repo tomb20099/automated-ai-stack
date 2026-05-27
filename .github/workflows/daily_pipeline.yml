@@ -23,10 +23,16 @@ jobs:
         env:
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
         run: python engine.py
+        
+      # --- THIS IS THE ADDITION ---
+      - name: Verify files exist
+        run: |
+          echo "Listing all files in the build directory:"
+          ls -la
+          
       - name: Upload Pages Artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          # We explicitly list the files to ensure they are picked up
           path: '.'
           
   deploy:
