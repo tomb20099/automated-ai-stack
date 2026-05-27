@@ -2,7 +2,6 @@ import os
 import time
 from google import genai
 
-# Setup
 client = genai.Client()
 
 NEWSLETTER_LINK = "https://tombeattie09.systeme.io/7a3a6748"
@@ -26,11 +25,6 @@ def get_authoritative_prompt(topic):
     Include this image at the top: <img src='{IMAGE_URL}' style='width:100%; height:auto;'>
     """
 
-def generate_content(topic):
-    prompt = get_authoritative_prompt(topic)
-    response = client.models.generate_content(model="gemini-2.0-flash", contents=prompt)
-    return response.text
-
 if __name__ == "__main__":
     if not os.path.exists("template.html"):
         raise FileNotFoundError("template.html is missing!")
@@ -39,25 +33,25 @@ if __name__ == "__main__":
         template = f.read()
 
     for filename, topic in PAGES.items():
-        # SKIP if file exists and has content to protect your quota
-        if os.path.exists(filename) and os.path.getsize(filename) > 1000:
+        # ONLY GENERATE IF FILE IS MISSING OR BROKEN
+        if os.path.exists(filename) and os.path.getsize(filename) > 500:
             print(f"Skipping {filename}, already exists.")
             continue
             
         try:
             print(f"Generating {filename}...")
-            time.sleep(75) # Conservative delay to stay under quota
+            time.sleep(80) 
             
-            content = generate_content(topic)
+            prompt = get_authoritative_prompt(topic)
+            response = client.models.generate_content(model="gemini-2.0-flash", contents=prompt)
             
-            final_html = template.replace("{CONTENT}", content)\
+            final_html = template.replace("{CONTENT}", response.text)\
                                  .replace("{NEWSLETTER_LINK}", NEWSLETTER_LINK)\
                                  .replace("{TITLE}", filename.replace(".html", "").title())
             
             with open(filename, "w") as f:
                 f.write(final_html)
-            print(f"Successfully updated {filename}.")
+            print(f"Successfully created {filename}.")
             
         except Exception as e:
             print(f"FAILED {filename}: {e}")
-            continue
