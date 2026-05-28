@@ -25,16 +25,7 @@ jobs:
       - name: Run generation script
         env:
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
-        run: |
-          echo "Checking API Key length..."
-          python -c "import os; print(len(os.environ.get('GEMINI_API_KEY', '')))"
-          python engine.py
-          
-      - name: Prepare build directory
-        run: |
-          mkdir -p public
-          cp *.html public/
-          ls -l public/
+        run: python engine.py
           
       - name: Upload Pages Artifact
         uses: actions/upload-pages-artifact@v3
