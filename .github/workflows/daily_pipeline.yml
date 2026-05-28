@@ -29,11 +29,18 @@ jobs:
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
         run: python engine.py
           
+      # This step creates a clean 'public' folder and moves ONLY what your site needs
+      - name: Setup Pages
+        run: |
+          mkdir public
+          cp *.html public/
+          # If you have images, add them here:
+          # cp *.jpg public/
+          
       - name: Upload Pages Artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          # We are uploading the root directory directly
-          path: .
+          path: 'public'
           
   deploy:
     needs: build
