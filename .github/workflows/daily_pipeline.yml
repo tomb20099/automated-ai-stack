@@ -31,9 +31,18 @@ jobs:
           
       - name: Prepare Artifact Folder
         run: |
-          mkdir public
-          cp *.html public/ || true
-          cp *.txt public/ || true
+          mkdir -p public
+          # Copy files explicitly to ensure they are captured
+          cp index.html public/ || true
+          cp about.html public/ || true
+          cp contact.html public/ || true
+          cp disclaimer.html public/ || true
+          cp automation-tips.html public/ || true
+          cp sales-funnel-guide.html public/ || true
+          cp ai-productivity.html public/ || true
+          # List files to verify they are in the folder
+          echo "Files in public folder:"
+          ls -R public/
           
       - name: Upload Pages Artifact
         uses: actions/upload-pages-artifact@v3
