@@ -13,7 +13,7 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
+      - name: Checkout Repository
         uses: actions/checkout@v4
       - name: Setup Python
         uses: actions/setup-python@v5
@@ -21,23 +21,16 @@ jobs:
           python-version: '3.10'
       - name: Install dependencies
         run: pip install -U google-genai
-      - name: Run engine
+      - name: Run generation script
         env:
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
         run: python engine.py
-      # Create the public directory and move files into it
-      - name: Prepare site
-        run: |
-          mkdir -p public
-          cp *.html public/ || true
-          cp *.css public/ || true
-          cp *.jpg public/ || true
-      # Upload only the public directory
-      - name: Upload artifact
+      # The simplest possible configuration: upload everything as-is
+      - name: Upload Artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: 'public'
-
+          path: .
+          
   deploy:
     needs: build
     runs-on: ubuntu-latest
