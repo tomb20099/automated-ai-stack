@@ -10,7 +10,6 @@ permissions:
   id-token: write
 
 jobs:
-  # 1. Build job: Generates the content
   build:
     runs-on: ubuntu-latest
     steps:
@@ -26,13 +25,19 @@ jobs:
         env:
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
         run: python engine.py
-      # Upload the root directory (where your index.html is)
+      # Create the public directory and move files into it
+      - name: Prepare site
+        run: |
+          mkdir -p public
+          cp *.html public/ || true
+          cp *.css public/ || true
+          cp *.jpg public/ || true
+      # Upload only the public directory
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: '.'
+          path: 'public'
 
-  # 2. Deploy job: Pushes the artifact to GitHub Pages
   deploy:
     needs: build
     runs-on: ubuntu-latest
