@@ -3,7 +3,12 @@ from google import genai
 
 # Correctly pull the API key from the GitHub Secrets environment
 api_key = os.environ.get("GEMINI_API_KEY")
-client = genai.Client(api_key=api_key)
+
+if not api_key:
+    print("DEBUG ERROR: GEMINI_API_KEY is not set in GitHub Secrets!")
+    client = None
+else:
+    client = genai.Client(api_key=api_key)
 
 # Define the pages
 pages = {
@@ -13,16 +18,19 @@ pages = {
 }
 
 def generate_content(topic):
-    # Using a simple, direct prompt
+    if client is None:
+        return "<h1>Configuration Error</h1><p>API Key is missing.</p>"
+    
     prompt = f"Write a 600-word educational guide about: {topic}. Use HTML tags (<h2>, <h3>, <p>, <ul>, <li>)."
     try:
         response = client.models.generate_content(model="gemini-2.0-flash", contents=prompt)
         return response.text
     except Exception as e:
-        return f"<h1>Generation Error</h1><p>The system could not generate content: {e}</p>"
+        # This will print the exact error to your GitHub Action logs
+        print(f"DEBUG ERROR: {e}") 
+        return f"<h1>Generation Failed</h1><p>Error details: {e}</p>"
 
 if __name__ == "__main__":
-    # Ensure template exists
     if not os.path.exists("template.html"):
         print("Error: template.html not found.")
         exit(1)
