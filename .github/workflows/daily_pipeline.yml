@@ -29,18 +29,11 @@ jobs:
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
         run: python engine.py
           
-      - name: Create and Populate Public Folder
-        run: |
-          mkdir public
-          # Copy all html, css, and txt files to the public folder
-          cp *.html public/ || true
-          cp *.txt public/ || true
-          cp *.css public/ || true
-          
       - name: Upload Pages Artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: 'public'
+          # We are uploading the root directory directly
+          path: .
           
   deploy:
     needs: build
