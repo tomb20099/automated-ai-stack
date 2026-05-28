@@ -1,48 +1,39 @@
 import os
 from google import genai
 
-# Correctly pull the API key from the GitHub Secrets environment
+# Setup
 api_key = os.environ.get("GEMINI_API_KEY")
+client = genai.Client(api_key=api_key)
 
-if not api_key:
-    print("DEBUG ERROR: GEMINI_API_KEY is not set in GitHub Secrets!")
-    client = None
-else:
-    client = genai.Client(api_key=api_key)
-
-# Define the pages
 pages = {
-    "index.html": "The evolution of digital business and why all-in-one platforms are replacing fragmented tool stacks.",
-    "automation.html": "A guide on building a stress-free automated sales funnel for beginners.",
-    "courses.html": "How to structure and launch your first online course for maximum student success."
+    "index.html": "The evolution of digital business.",
+    "automation.html": "Building an automated sales funnel.",
+    "courses.html": "Structuring an online course."
 }
 
-def generate_content(topic):
-    if client is None:
-        return "<h1>Configuration Error</h1><p>API Key is missing.</p>"
-    
-    prompt = f"Write a 600-word educational guide about: {topic}. Use HTML tags (<h2>, <h3>, <p>, <ul>, <li>)."
+def create_file(filename, topic):
+    print(f"--- Attempting to create {filename} ---")
     try:
-        response = client.models.generate_content(model="gemini-2.0-flash", contents=prompt)
-        return response.text
+        # Prompting for content
+        response = client.models.generate_content(
+            model="gemini-2.0-flash", 
+            contents=f"Write a short 300-word article about: {topic}"
+        )
+        content = response.text
     except Exception as e:
-        # This will print the exact error to your GitHub Action logs
-        print(f"DEBUG ERROR: {e}") 
-        return f"<h1>Generation Failed</h1><p>Error details: {e}</p>"
+        content = f"<h1>Generation Failed</h1><p>Error: {e}</p>"
+        print(f"ERROR: Could not generate {filename}: {e}")
+
+    # Fallback to a basic file if template missing
+    template = "<html><body>{CONTENT}</body></html>"
+    if os.path.exists("template.html"):
+        with open("template.html", "r") as f:
+            template = f.read()
+            
+    with open(filename, "w") as f:
+        f.write(template.replace("{CONTENT}", content))
+    print(f"Successfully wrote {filename}")
 
 if __name__ == "__main__":
-    if not os.path.exists("template.html"):
-        print("Error: template.html not found.")
-        exit(1)
-
-    with open("template.html", "r") as f:
-        template = f.read()
-
     for filename, topic in pages.items():
-        print(f"Working on {filename}...")
-        content = generate_content(topic)
-        final_html = template.replace("{CONTENT}", content)
-        
-        with open(filename, "w") as f:
-            f.write(final_html)
-        print(f"Finished {filename}")
+        create_file(filename, topic)
