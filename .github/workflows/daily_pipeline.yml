@@ -29,11 +29,16 @@ jobs:
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
         run: python engine.py
           
+      - name: Prepare Artifact Folder
+        run: |
+          mkdir public
+          cp *.html public/ || true
+          cp *.txt public/ || true
+          
       - name: Upload Pages Artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          # This specifically tells GitHub to package the current directory
-          path: .
+          path: 'public'
           
   deploy:
     needs: build
