@@ -29,19 +29,11 @@ jobs:
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
         run: python engine.py
           
-      - name: Prepare Artifact Folder
-        run: |
-          mkdir -p public
-          # Copy all HTML and TXT files, ignoring missing ones without errors
-          find . -maxdepth 1 -name "*.html" -exec cp {} public/ \;
-          find . -maxdepth 1 -name "*.txt" -exec cp {} public/ \;
-          echo "Files currently in public folder:"
-          ls -R public/
-          
       - name: Upload Pages Artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: 'public'
+          # This tells GitHub to upload everything in the current root folder
+          path: '.'
           
   deploy:
     needs: build
