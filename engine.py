@@ -5,35 +5,24 @@ from google import genai
 api_key = os.environ.get("GEMINI_API_KEY")
 client = genai.Client(api_key=api_key)
 
-pages = {
-    "index.html": "The evolution of digital business.",
-    "automation.html": "Building an automated sales funnel.",
-    "courses.html": "Structuring an online course."
-}
-
-def create_file(filename, topic):
-    print(f"--- Attempting to create {filename} ---")
+def generate_page(filename, topic):
+    print(f"DEBUG: Generating {filename}...")
     try:
-        # Prompting for content
         response = client.models.generate_content(
             model="gemini-2.0-flash", 
             contents=f"Write a short 300-word article about: {topic}"
         )
         content = response.text
     except Exception as e:
-        content = f"<h1>Generation Failed</h1><p>Error: {e}</p>"
-        print(f"ERROR: Could not generate {filename}: {e}")
+        content = f"<h1>API ERROR</h1><p>{str(e)}</p>"
+        print(f"DEBUG: Error in {filename}: {str(e)}")
 
-    # Fallback to a basic file if template missing
-    template = "<html><body>{CONTENT}</body></html>"
-    if os.path.exists("template.html"):
-        with open("template.html", "r") as f:
-            template = f.read()
-            
+    # Use a basic structure
     with open(filename, "w") as f:
-        f.write(template.replace("{CONTENT}", content))
-    print(f"Successfully wrote {filename}")
+        f.write(f"<html><body><h1>{topic}</h1>{content}</body></html>")
+    print(f"DEBUG: Saved {filename}")
 
 if __name__ == "__main__":
-    for filename, topic in pages.items():
-        create_file(filename, topic)
+    generate_page("index.html", "Evolution of business")
+    generate_page("automation.html", "Building sales funnels")
+    generate_page("courses.html", "Online course creation")
