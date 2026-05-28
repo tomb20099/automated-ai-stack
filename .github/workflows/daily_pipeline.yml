@@ -10,45 +10,34 @@ permissions:
   id-token: write
 
 jobs:
+  # 1. Build job: Generates the content
   build:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout Repository
+      - name: Checkout
         uses: actions/checkout@v4
-      
       - name: Setup Python
         uses: actions/setup-python@v5
         with:
           python-version: '3.10'
-          
       - name: Install dependencies
         run: pip install -U google-genai
-        
-      - name: Run generation script
+      - name: Run engine
         env:
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
         run: python engine.py
-          
-      # This step creates a clean 'public' folder and moves ONLY what your site needs
-      - name: Setup Pages
-        run: |
-          mkdir public
-          cp *.html public/
-          # If you have images, add them here:
-          # cp *.jpg public/
-          
-      - name: Upload Pages Artifact
+      # Upload the root directory (where your index.html is)
+      - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: 'public'
-          
+          path: '.'
+
+  # 2. Deploy job: Pushes the artifact to GitHub Pages
   deploy:
     needs: build
     runs-on: ubuntu-latest
     environment:
       name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
     steps:
-      - name: Deploy to GitHub Pages
-        id: deployment
+      - name: Deploy
         uses: actions/deploy-pages@v4
