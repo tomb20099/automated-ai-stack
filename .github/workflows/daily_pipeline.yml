@@ -14,22 +14,28 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      
       - uses: actions/setup-python@v5
         with:
           python-version: '3.10'
+          
       - name: Install dependencies
         run: pip install -U google-genai
+        
       - name: Run generation script
         env:
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
-        run: python engine.py
-      - name: Move files to public folder
+        run: |
+          echo "Checking API Key length..."
+          python -c "import os; print(len(os.environ.get('GEMINI_API_KEY', '')))"
+          python engine.py
+          
+      - name: Prepare build directory
         run: |
           mkdir -p public
-          # Copy all html files into the public folder
           cp *.html public/
-          # Ensure index.html is there
           ls -l public/
+          
       - name: Upload Pages Artifact
         uses: actions/upload-pages-artifact@v3
         with:
