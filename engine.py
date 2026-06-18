@@ -62,7 +62,7 @@ Requirements:
 """
 
         response = client.models.generate_content(
-            model="gemini-2.0-flash",
+            model="gemini-1.5-flash-latest",  # CHANGED from 2.0-flash to avoid quota 0
             contents=prompt
         )
         
